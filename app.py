@@ -367,6 +367,29 @@ PAGE = """<!DOCTYPE html>
   #inp:focus{border-color:var(--accent);}
   #snd{border:none;background:var(--accent);color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:17px;flex-shrink:0;}
   @media(max-width:600px){#chat{inset:0;width:100%;height:100%;border-radius:0;bottom:0;right:0;}}
+
+  /* mobile polish */
+  @media(max-width:760px){
+    body{overflow-x:hidden;}
+    .wrap{padding:0 20px;}
+    section{padding:56px 0;}
+    .hero{padding:48px 0 58px;}
+    .hero .wrap{grid-template-columns:1fr;gap:32px;}
+    .hero h1{font-size:clamp(34px,10vw,50px);}
+    .hero p.sub{font-size:16.5px;}
+    .hero .cta{width:100%;}
+    .hero .cta .btn{flex:1 1 100%;justify-content:center;}
+    .head{margin-bottom:36px;}
+    .head h2{font-size:clamp(27px,7.5vw,38px);}
+    .head p{font-size:16px;}
+    .calc{padding:26px;border-radius:20px;}
+    .calc h3{font-size:23px;}
+    .calc .big{font-size:clamp(40px,13vw,58px);}
+    .cta-band{padding:40px 24px;border-radius:22px;}
+    .plan.pop{transform:none;}
+    nav .row{padding:14px 20px;}
+    nav .logo{font-size:19px;}
+  }
 </style>
 </head>
 <body>
