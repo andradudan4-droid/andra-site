@@ -28,6 +28,7 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 NOTIFY_TO = os.environ.get("NOTIFY_TO", "andradudan4@gmail.com")
 
 # Your real details — used by the assistant and shown on the page.
+BRAND = "Frontdesk"
 CONTACT_NAME = "Andra Dudan"
 CONTACT_PHONE = "07493 396628"
 CONTACT_PHONE_TEL = "07493396628"
@@ -144,13 +145,13 @@ def send_lead_email(convo):
 #  The sales assistant's brain
 # ---------------------------------------------------------------------------
 SYSTEM_PROMPT = f"""
-You are the friendly, sharp assistant on the website of {CONTACT_NAME}, who
-builds AI chat assistants for local businesses (hairdressers, barbers, builders,
-plumbers, electricians, decorators, dog groomers, beauticians, garages and more)
-around Portsmouth and beyond. You ARE a live example of what {CONTACT_NAME}
-builds, so be genuinely good - warm, confident, concise, with a bit of personality.
+You are the friendly, sharp assistant on the website of {BRAND}, a service by
+{CONTACT_NAME} that builds AI chat assistants for local businesses (hairdressers,
+barbers, builders, plumbers, electricians, decorators, dog groomers, beauticians,
+garages and more) around Portsmouth and beyond. You ARE a live example of what
+{BRAND} builds, so be genuinely good - warm, confident, concise, with personality.
 
-WHAT ANDRA OFFERS:
+WHAT {BRAND.upper()} OFFERS:
 - A smart assistant that lives on a business's website (and can sit on their
   Google profile link too). It answers customer questions instantly 24/7,
   qualifies them, and sends every lead straight to the owner's inbox - tidied
@@ -198,7 +199,7 @@ PAGE = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Andra Dudan — AI assistants that catch every customer</title>
+<title>Frontdesk — AI assistants that catch every customer</title>
 <meta name="description" content="Smart AI chat assistants for local businesses. Answer customers 24/7, qualify them, and get every lead in your inbox.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -371,7 +372,7 @@ PAGE = """<!DOCTYPE html>
 <body>
 
 <nav><div class="row">
-  <div class="logo">Andra<span>.</span>Dudan</div>
+  <div class="logo">Front<span>desk</span></div>
   <div class="nl">
     <a href="#how">How it works</a>
     <a href="#pricing">Pricing</a>
@@ -473,18 +474,18 @@ PAGE = """<!DOCTYPE html>
 
 <section><div class="wrap"><div class="cta-band reveal">
   <h2 class="disp">Let's catch the customers you're missing</h2>
-  <p>Chat to the assistant on this page (yes, it's one of mine) or get me directly.</p>
+  <p>Chat to the assistant on this page (yes, it's one of ours) or reach Andra directly.</p>
   <button class="btn" onclick="openChat()">Try the assistant</button>
   <div class="links">Or reach me: <a href="tel:__PHONE_TEL__">__PHONE__</a> · <a href="mailto:__EMAIL__">__EMAIL__</a></div>
 </div></div></section>
 
-<footer>© <span id="yr"></span> __NAME__ · AI assistants for local businesses · Portsmouth, UK</footer>
+<footer>© <span id="yr"></span> Frontdesk · AI assistants for local businesses · Portsmouth · by __NAME__</footer>
 
 <div id="bub" onclick="toggleChat()">
   <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <div id="chat">
-  <div id="ch"><div><div class="t">Andra's Assistant</div><small>Ask anything · usually replies instantly</small></div><div class="x" onclick="toggleChat()">&times;</div></div>
+  <div id="ch"><div><div class="t">Frontdesk Assistant</div><small>Ask anything · usually replies instantly</small></div><div class="x" onclick="toggleChat()">&times;</div></div>
   <div id="msgs"></div>
   <div id="irow"><input id="inp" placeholder="Type a message…" onkeypress="if(event.key==='Enter')send()"><button id="snd" onclick="send()">➤</button></div>
 </div>
@@ -522,7 +523,7 @@ PAGE = """<!DOCTYPE html>
 
   // chat
   var started=false;
-  function openChat(){var c=document.getElementById('chat');c.classList.add('open');if(!started){started=true;add("Hey! I'm Andra's assistant — and a live example of what she builds. Tell me a bit about your business and I'll show you how this could work for you. What do you do?",'b');}document.getElementById('inp').focus();}
+  function openChat(){var c=document.getElementById('chat');c.classList.add('open');if(!started){started=true;add("Hey! I'm the Frontdesk assistant — and a live demo of exactly what we'd build for you. Tell me a bit about your business and I'll show you how it could work. What do you do?",'b');}document.getElementById('inp').focus();}
   function toggleChat(){var c=document.getElementById('chat');if(c.classList.contains('open')){c.classList.remove('open');}else{openChat();}}
   function add(txt,who){var m=document.getElementById('msgs');var d=document.createElement('div');d.className='m '+who;d.textContent=txt;m.appendChild(d);m.scrollTop=m.scrollHeight;}
   async function send(){var i=document.getElementById('inp');var v=i.value.trim();if(!v)return;add(v,'u');i.value='';
