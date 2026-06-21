@@ -27,6 +27,11 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 NOTIFY_TO = os.environ.get("NOTIFY_TO", "andradudan4@gmail.com")
+# The "from" address for lead emails. Until you verify a domain in Resend, the
+# shared test address only delivers to your own Resend account email. Once you
+# verify frontdesk.org.uk in Resend, set MAIL_FROM env var to
+# "Frontdesk <leads@frontdesk.org.uk>" and leads can go to any address.
+MAIL_FROM = os.environ.get("MAIL_FROM", "Frontdesk <onboarding@resend.dev>")
 
 # Your real details — used by the assistant and shown on the page.
 BRAND = "Frontdesk"
@@ -225,10 +230,8 @@ def send_lead_email(convo):
             "https://api.resend.com/emails",
             headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
             json={
-                # Works out of the box if your Resend account is registered under
-                # andradudan4@gmail.com. To send from your own domain later,
-                # verify it in Resend and change this 'from' address.
-                "from": "Frontdesk <onboarding@resend.dev>",
+                # Configurable via the MAIL_FROM env var (see top of file).
+                "from": MAIL_FROM,
                 "to": [NOTIFY_TO],
                 "subject": f"New lead from your website - {phone}",
                 "text": text_body,
@@ -316,6 +319,18 @@ PAGE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Frontdesk — AI assistants that catch every customer</title>
 <meta name="description" content="Smart AI chat assistants for local businesses. Answer customers 24/7, qualify them, and get every lead in your inbox.">
+<meta name="theme-color" content="#15131d">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Frontdesk">
+<meta property="og:title" content="Frontdesk — AI assistants that catch every customer">
+<meta property="og:description" content="Smart AI chat assistants for local businesses. Answer customers 24/7, qualify them, and drop every lead in your inbox.">
+<meta property="og:url" content="https://frontdesk.org.uk">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315131d'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='%23ff5a3c' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<!-- Analytics: privacy-friendly, no cookies. Create a free account at plausible.io,
+     add the domain "frontdesk.org.uk", and stats start flowing - no code change needed.
+     Prefer Google Analytics? Give Claude your G-XXXX ID and it'll swap this out. -->
+<script defer data-domain="frontdesk.org.uk" src="https://plausible.io/js/script.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -614,10 +629,11 @@ PAGE = """<!DOCTYPE html>
   <h2 class="disp">Let's catch the customers you're missing</h2>
   <p>Chat to the assistant on this page (yes, it's one of ours) or reach Andra directly.</p>
   <button class="btn" onclick="openChat()">Try the assistant</button>
+  <div class="links">Want to see one on a real business? <a href="https://www.au-decorating.com" target="_blank" style="color:#ff8a6f;font-weight:600;">See it live on a client's site →</a></div>
   <div class="links">Or reach me: <a href="tel:__PHONE_TEL__">__PHONE__</a> · <a href="mailto:__EMAIL__">__EMAIL__</a></div>
 </div></div></section>
 
-<footer>© <span id="yr"></span> Frontdesk · AI assistants for local businesses · Portsmouth · by __NAME__</footer>
+<footer>© <span id="yr"></span> Frontdesk · AI assistants for local businesses · Portsmouth · by __NAME__ · <a href="/privacy" style="color:#7c5cff;">Privacy Policy</a></footer>
 
 <div id="bub" onclick="toggleChat()">
   <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -683,11 +699,65 @@ conversations = {}
 notified = set()
 
 
+PRIVACY_PAGE = f"""<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — {BRAND}</title>
+<meta name="theme-color" content="#15131d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315131d'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='%23ff5a3c' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<style>
+  body{{margin:0;background:#f7f3ec;color:#15131d;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.7;}}
+  .bar{{background:#15131d;padding:20px 26px;}}
+  .bar a{{color:#fff;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-.02em;}}
+  .bar a span{{color:#ff5a3c;}}
+  .wrap{{max-width:740px;margin:0 auto;padding:48px 26px 80px;}}
+  h1{{font-size:34px;letter-spacing:-.02em;margin:0 0 6px;}}
+  .lead{{color:#6c6760;margin:0 0 30px;}}
+  h2{{font-size:19px;margin:34px 0 8px;}}
+  a{{color:#d6452a;}}
+  .foot{{color:#a59e92;font-size:13px;margin-top:50px;border-top:1px solid #e4ded2;padding-top:20px;}}
+</style></head><body>
+<div class="bar"><a href="/">Front<span>desk</span></a></div>
+<div class="wrap">
+  <h1>Privacy Policy</h1>
+  <p class="lead">How {BRAND} ({CONTACT_NAME}) looks after the information you share with us.</p>
+
+  <p>This policy explains what we collect when you contact us through this website, why we collect it, and your rights over it. {CONTACT_NAME}, trading as {BRAND}, is the data controller.</p>
+
+  <h2>What we collect</h2>
+  <p>When you use the chat assistant or get in touch, we collect only what you choose to give us &mdash; typically your name, phone number or email, the kind of business you run, and what you&rsquo;d like help with.</p>
+
+  <h2>Why we collect it &amp; our lawful basis</h2>
+  <p>We use your details solely to reply to your enquiry, discuss how we could help, and follow up about our service. Our lawful basis is taking steps at your request before entering into a contract, and our legitimate interest in responding to enquiries.</p>
+
+  <h2>Who we share it with</h2>
+  <p>We don&rsquo;t sell your data or use it for advertising. To run the website assistant, your messages are processed by our AI provider (Groq) to generate replies, and your enquiry is emailed to us through Resend. These providers process the information only to deliver that service. We may contact you by phone, text, WhatsApp or email to follow up.</p>
+
+  <h2>How long we keep it</h2>
+  <p>We keep enquiry details only as long as needed to deal with your enquiry and any work that follows, and for our normal business records, after which they are deleted.</p>
+
+  <h2>Cookies</h2>
+  <p>The site uses a single essential cookie to remember your chat session. We don&rsquo;t use advertising or tracking cookies, and our analytics are privacy-friendly and cookie-free.</p>
+
+  <h2>Your rights</h2>
+  <p>You can ask us to see, correct, or delete the information we hold about you, or to stop using it &mdash; just get in touch. You also have the right to complain to the UK&rsquo;s Information Commissioner&rsquo;s Office (ico.org.uk).</p>
+
+  <h2>Contact</h2>
+  <p>For anything about your data, email <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a> or call <a href="tel:{CONTACT_PHONE_TEL}">{CONTACT_PHONE}</a>.</p>
+
+  <div class="foot">&copy; {BRAND} · AI assistants for local businesses · Portsmouth · <a href="/">Back to home</a></div>
+</div></body></html>"""
+
+
 @app.route("/")
 def home():
     if "sid" not in session:
         session["sid"] = str(uuid.uuid4())
     return Response(PAGE, mimetype="text/html")
+
+
+@app.route("/privacy")
+def privacy():
+    return Response(PRIVACY_PAGE, mimetype="text/html")
 
 
 @app.route("/chat", methods=["POST"])
