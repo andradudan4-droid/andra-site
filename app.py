@@ -160,6 +160,12 @@ WHAT {BRAND.upper()} OFFERS:
 - It captures booking ENQUIRIES (name, what they want, preferred timing,
   contact) - the owner confirms the actual appointment. It does NOT book into
   their calendar, so it never promises a slot it can't see.
+- NO WEBSITE? No problem. Andra can also build the business a simple, smart
+  website or landing page to put the assistant on. This is a separate paid
+  add-on, priced on a custom quote depending on what they want (a one-page
+  site, a few pages, photos/gallery, etc.). The monthly assistant plans above
+  do NOT include a full custom website - mention the website build as an extra
+  if they don't have one or want a better one.
 
 HOW IT WORKS (3 steps):
 1. You tell Andra about your business. 2. Andra trains and installs your
@@ -180,9 +186,12 @@ YOUR TWO JOBS:
 2. Qualify and capture the visitor as a lead. Naturally find out: what kind of
    business they run, whether they have a website already, how they currently
    handle enquiries (and whether they miss any out of hours), and what they'd
-   want the assistant to do. Then get their name and a phone number or email so
-   Andra can follow up. Once you have a name and a contact detail, reassure them
-   Andra will be in touch personally - usually same day.
+   want the assistant to do. If they DON'T have a website (or aren't happy with
+   theirs), let them know Andra can build one for them as a paid add-on, priced
+   on a custom quote, so the assistant has a proper home - and offer to note it
+   down so Andra can include it in their quote. Then get their name and a phone
+   number or email so Andra can follow up. Once you have a name and a contact
+   detail, reassure them Andra will be in touch personally - usually same day.
 
 STYLE: short, warm, natural - like texting a switched-on friend who happens to
 build this stuff. Ask ONE question at a time. Don't be pushy. Don't invent
@@ -239,7 +248,7 @@ PAGE = """<!DOCTYPE html>
 
   /* hero */
   .hero{background:var(--ink);color:#fff;position:relative;overflow:hidden;padding:88px 0 96px;}
-  .hero::before{content:"";position:absolute;inset:0;
+  .hero::before{content:"";position:absolute;inset:0;pointer-events:none;
     background:radial-gradient(60% 50% at 78% 8%,rgba(124,92,255,.42),transparent 60%),
                radial-gradient(50% 45% at 12% 95%,rgba(255,90,60,.36),transparent 60%);}
   .hero .wrap{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:54px;align-items:center;}
@@ -280,7 +289,7 @@ PAGE = """<!DOCTYPE html>
 
   /* calculator */
   .calc{background:var(--ink);color:#fff;border-radius:26px;padding:46px;display:grid;grid-template-columns:1fr 1fr;gap:46px;align-items:center;position:relative;overflow:hidden;}
-  .calc::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 60% at 90% 10%,rgba(124,92,255,.3),transparent 60%);}
+  .calc::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(50% 60% at 90% 10%,rgba(124,92,255,.3),transparent 60%);}
   .calc .l,.calc .r{position:relative;}
   .calc h3{font-family:var(--disp);font-weight:800;font-size:28px;margin-bottom:8px;}
   .calc .field{margin:22px 0;}
@@ -338,7 +347,7 @@ PAGE = """<!DOCTYPE html>
 
   /* cta band */
   .cta-band{background:var(--ink);color:#fff;border-radius:28px;padding:60px;text-align:center;position:relative;overflow:hidden;}
-  .cta-band::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 80% at 50% 120%,rgba(255,90,60,.4),transparent 60%);}
+  .cta-band::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 80% at 50% 120%,rgba(255,90,60,.4),transparent 60%);}
   .cta-band h2{font-size:clamp(30px,4.4vw,44px);position:relative;}
   .cta-band p{color:rgba(255,255,255,.78);margin:16px 0 28px;position:relative;}
   .cta-band .links{position:relative;margin-top:26px;font-size:15px;color:rgba(255,255,255,.7);}
@@ -488,9 +497,9 @@ PAGE = """<!DOCTYPE html>
 <section id="faq"><div class="wrap">
   <div class="head reveal"><div class="eyebrow">Good questions</div><h2 class="disp">The bits people ask</h2></div>
   <div class="faq reveal">
-    <details><summary>Do I need a website already?</summary><p>Not necessarily — it can live on a simple page I set up, or link straight from your Google profile. If you've got a site, even better, it slots right in.</p></details>
+    <details><summary>Do I need a website already?</summary><p>Not necessarily — it can live on a simple page I set up, or link straight from your Google profile. If you've got a site, even better, it slots right in. And if you'd like a proper website of your own, I can build you one too as a paid add-on, quoted to suit what you need.</p></details>
     <details><summary>Will it book appointments into my calendar?</summary><p>It captures the enquiry — name, what they want, preferred timing and contact — and sends it to you to confirm. It won't promise a slot it can't see, which keeps customers happy. Full calendar booking is available as a custom add-on.</p></details>
-    <details><summary>How long until it's live?</summary><p>Usually a few days from our first chat. I do all the setup — you just answer a few questions about your business.</p></details>
+    <details><summary>How long until it's live?</summary><p>Usually within a few days of our first chat — most businesses are up and running inside a week. Here's how it goes: we have a quick chat about your services, prices and the questions your customers tend to ask; I build and train your assistant on all of it; then I send you a private link to try it yourself and tell me anything you'd like changed. Once you're happy, I add it to your site (or a page I set up for you) and the leads start landing in your inbox. You're kept in the loop the whole way, and the setup is entirely on me — no tech work on your side.</p></details>
     <details><summary>What if I want to cancel?</summary><p>No lock-in. Cancel anytime. The free 14-day trial means you can see the leads roll in before you pay a penny.</p></details>
   </div>
 </div></section>
