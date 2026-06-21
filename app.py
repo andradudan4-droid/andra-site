@@ -14,6 +14,7 @@ from flask import Flask, request, jsonify, session, Response
 import os
 import re
 import uuid
+import html
 import threading
 import requests
 from groq import Groq
@@ -104,22 +105,121 @@ def summarise_lead(convo):
         return None
 
 
+def _parse_summary(structured):
+    """Turn the model's labelled summary lines into a dict keyed by lowercase label."""
+    out = {}
+    if not structured:
+        return out
+    for line in structured.splitlines():
+        if ":" in line:
+            k, v = line.split(":", 1)
+            out[k.strip().lower()] = v.strip()
+    return out
+
+
+def _lead_fields(convo):
+    """Tidy, ordered lead fields - reliable regex first, AI summary for the rest."""
+    s = _parse_summary(summarise_lead(convo))
+
+    def pick(*keys):
+        for k in keys:
+            v = s.get(k)
+            if v and v.lower() not in ("not specified", "not provided", "n/a", "none", "-"):
+                return v
+        return None
+
+    return {
+        "Name": pick("name"),
+        "Business / trade": pick("business / trade", "business", "trade"),
+        "Phone": find_phone(convo),
+        "Email": find_email(convo),
+        "Has a website?": pick("has a website?", "has a website", "website"),
+        "Wants help with": pick("what they want help with", "wants help with"),
+        "Handles enquiries now": pick("how they handle enquiries now", "handles enquiries now"),
+        "Best contact": pick("best contact"),
+        "Notes": pick("other notes", "notes"),
+    }
+
+
+def _row(label, value):
+    if not value:
+        return ""
+    return (
+        '<tr>'
+        f'<td style="padding:10px 16px;border-bottom:1px solid #efe9df;color:#8a8378;'
+        f'font-size:13px;white-space:nowrap;vertical-align:top;width:150px">{html.escape(label)}</td>'
+        f'<td style="padding:10px 16px;border-bottom:1px solid #efe9df;color:#15131d;'
+        f'font-size:14px;font-weight:600">{html.escape(str(value))}</td>'
+        '</tr>'
+    )
+
+
+def _transcript_html(convo):
+    rows = []
+    for m in convo:
+        if m["role"] == "user":
+            who, color, bg = "Visitor", "#ff5a3c", "#f7f3ec"
+        elif m["role"] == "assistant":
+            who, color, bg = "Frontdesk Assistant", "#7c5cff", "#ffffff"
+        else:
+            continue
+        text = html.escape(m["content"]).replace("\n", "<br>")
+        rows.append(
+            f'<div style="margin:0 0 12px">'
+            f'<div style="font-size:11px;letter-spacing:.05em;text-transform:uppercase;'
+            f'color:{color};font-weight:700;margin-bottom:4px">{who}</div>'
+            f'<div style="background:{bg};border:1px solid #ece6da;border-radius:10px;'
+            f'padding:11px 14px;font-size:14px;color:#2a2630;line-height:1.5">{text}</div>'
+            f'</div>'
+        )
+    return "".join(rows)
+
+
+def _lead_email_html(fields, convo):
+    rows = "".join(_row(k, v) for k, v in fields.items())
+    return (
+        '<!DOCTYPE html><html><body style="margin:0;background:#efe9df;padding:24px;'
+        'font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">'
+        '<div style="max-width:620px;margin:0 auto;background:#fff;border-radius:16px;'
+        'overflow:hidden;box-shadow:0 2px 14px rgba(21,19,29,.10)">'
+        '<div style="background:#15131d;padding:26px 30px">'
+        '<div style="color:#ff5a3c;font-size:12px;letter-spacing:.2em;text-transform:uppercase;'
+        'font-weight:700">Frontdesk</div>'
+        '<div style="color:#fff;font-size:22px;font-weight:800;margin-top:5px;letter-spacing:-.01em">'
+        'New lead from your website</div></div>'
+        '<div style="padding:26px 30px">'
+        '<p style="margin:0 0 20px;font-size:14px;color:#6c6760">'
+        'Captured by your website assistant - here\'s who to follow up with:</p>'
+        '<table style="width:100%;border-collapse:collapse;border:1px solid #efe9df;'
+        f'border-radius:8px;overflow:hidden;margin-bottom:28px">{rows}</table>'
+        '<div style="font-size:12px;letter-spacing:.05em;text-transform:uppercase;'
+        'color:#a59e92;font-weight:700;margin-bottom:14px">Full conversation</div>'
+        f'{_transcript_html(convo)}'
+        '</div>'
+        '<div style="background:#faf7f1;padding:16px 30px;border-top:1px solid #efe9df;'
+        'font-size:12px;color:#a59e92">Sent automatically by your Frontdesk website assistant.</div>'
+        '</div></body></html>'
+    )
+
+
 def send_lead_email(convo):
     if not RESEND_API_KEY:
         print("RESEND_API_KEY not set, skipping lead email")
         return
-    email = find_email(convo) or "Not provided"
-    phone = find_phone(convo) or "Not provided"
-    structured = summarise_lead(convo)
-    body = (
-        "NEW LEAD — your website assistant\n"
-        "=================================\n"
-        f"Phone: {phone}\n"
-        f"Email: {email}\n"
-    )
-    if structured:
-        body += structured + "\n"
-    body += "=================================\n\nFull conversation:\n\n" + _transcript(convo)
+
+    fields = _lead_fields(convo)
+    transcript = _transcript(convo)
+
+    # Plain-text fallback for clients that won't render HTML.
+    text_lines = ["NEW LEAD - Frontdesk", "===================="]
+    for k, v in fields.items():
+        text_lines.append(f"{k}: {v or 'Not specified'}")
+    text_lines += ["====================", "", "Full conversation:", "", transcript]
+    text_body = "\n".join(text_lines)
+
+    html_body = _lead_email_html(fields, convo)
+    phone = fields["Phone"] or "no number yet"
+
     try:
         resp = requests.post(
             "https://api.resend.com/emails",
@@ -128,12 +228,13 @@ def send_lead_email(convo):
                 # Works out of the box if your Resend account is registered under
                 # andradudan4@gmail.com. To send from your own domain later,
                 # verify it in Resend and change this 'from' address.
-                "from": "Website Assistant <onboarding@resend.dev>",
+                "from": "Frontdesk <onboarding@resend.dev>",
                 "to": [NOTIFY_TO],
-                "subject": f"New lead from your website — phone: {phone}",
-                "text": body,
+                "subject": f"New lead from your website - {phone}",
+                "text": text_body,
+                "html": html_body,
             },
-            timeout=10,
+            timeout=15,
         )
         if resp.status_code >= 300:
             print(f"Resend error: {resp.status_code} {resp.text}")
