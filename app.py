@@ -68,6 +68,19 @@ def has_contact_info(convo):
     return bool(find_email(convo) or find_phone(convo))
 
 
+CLOSING_RE = re.compile(
+    r"\b(no longer interested|not interested|no thanks|no thank you|"
+    r"that'?s all|that'?s it|that'?s everything|nothing else|all good|"
+    r"that'?s great thank|thanks that'?s|goodbye|bye for now|no more|"
+    r"i'?m good|im good|sounds good thanks)\b",
+    re.I,
+)
+
+
+def _looks_like_closing(text):
+    return bool(CLOSING_RE.search(text or ""))
+
+
 def _transcript(convo):
     out = []
     for m in convo:
@@ -277,28 +290,34 @@ assistant (usually within a few days). 3. Leads start landing in your inbox.
 
 PRICING (real - you may quote it; all plans include free setup and a free
 14-day trial, no card needed):
-- Starter — £29/month: assistant answers FAQs and captures leads to your inbox.
-- Professional — £49/month (most popular): everything in Starter, trained on
+- Starter — £39/month: assistant answers FAQs and captures leads to your inbox.
+- Professional — £69/month (most popular): everything in Starter, trained on
   your services & prices, smart qualifying questions, styled to match your brand.
-- Premium — £89/month: everything in Professional, plus WhatsApp/text lead
+- Premium — £119/month: everything in Professional, plus WhatsApp/text lead
   alerts, priority support and monthly tweaks.
 Bigger or multi-location needs are quoted custom. Prices are intentionally keen
 because Andra is building up her first clients.
 
 YOUR TWO JOBS:
 1. Answer questions about the service warmly and accurately.
-2. Capture the visitor as a lead, but keep it light and natural - this should
-   feel like a quick, friendly chat, NOT a questionnaire. You really only need
-   two things: a rough idea of what their business does, and a name with a phone
-   number or email so Andra can follow up. Get those gently over a few short
-   messages. Anything else (whether they have a website, how they handle
-   enquiries now, what they'd want the assistant to do) is a bonus - only touch
-   on it if it comes up naturally, and never fire off several questions at once.
-   If they happen to mention they don't have a website (or aren't happy with
-   theirs), you can note that Andra can build one as a paid add-on on a custom
-   quote - mention it once, lightly, don't push. Once you have a name and a
-   contact detail, reassure them Andra will be in touch personally, usually the
-   same day.
+2. Capture the visitor as a lead - warm and natural, like a quick chat, NOT a
+   questionnaire. Gather these essentials, ONE short question at a time:
+     - what their business is / what they do,
+     - what they'd want the assistant to help with (answering FAQs, catching
+       leads after hours, bookings, etc.) - or whether they already have a website,
+     - their name and a phone number or email so Andra can follow up.
+   Keep it to roughly those - don't grill them, and never stack questions. If
+   they don't have a website (or aren't happy with theirs), mention once,
+   lightly, that Andra can build one as a paid add-on on a custom quote.
+   Once you've gathered those essentials, send ONE short, warm closing message
+   saying Andra will be in touch personally, usually the same day. Then, on a
+   brand-new line at the very end of that message, output this exact tag and
+   nothing after it: [[READY]]
+   The [[READY]] tag is an internal signal only - it is removed automatically and
+   the visitor never sees it. Only ever include it in your final wrap-up message,
+   never earlier in the chat, and never just because they gave a contact detail
+   early - keep gently gathering the rest first (what they do, what they want),
+   then add the tag when you're genuinely wrapping up.
 
 STYLE: short, warm, natural - like texting a switched-on friend who happens to
 build this stuff. Keep every reply to one or two short sentences and ask only
@@ -520,6 +539,20 @@ PAGE = """<!DOCTYPE html>
     nav .row{padding:14px 20px;}
     nav .logo{font-size:19px;}
   }
+
+  /* proof / case study */
+  .casegrid{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;}
+  .case{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:38px 34px;}
+  .case.soft{background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+  .case.soft::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 70% at 100% 0,rgba(124,92,255,.32),transparent 60%);}
+  .case-tag{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--accent);margin-bottom:12px;position:relative;}
+  .case h3{font-family:var(--disp);font-size:28px;margin-bottom:12px;}
+  .case p{color:var(--muted);font-size:15.5px;}
+  .case.soft p{color:rgba(255,255,255,.82);position:relative;}
+  .case-link{display:inline-block;margin-top:18px;color:var(--accent);font-weight:600;}
+  .big-quote{font-family:var(--disp);font-weight:700;font-size:23px;line-height:1.32;color:#fff;}
+  .muted-note{margin-top:16px;font-size:13px;color:rgba(255,255,255,.55);}
+  @media(max-width:760px){.casegrid{grid-template-columns:1fr;}.case{padding:28px 24px;}}
 </style>
 </head>
 <body>
@@ -529,6 +562,7 @@ PAGE = """<!DOCTYPE html>
   <div class="nl">
     <a href="#how">How it works</a>
     <a href="#pricing">Pricing</a>
+    <a href="#website">Websites</a>
     <a href="#faq">FAQ</a>
     <a class="btn" href="#" onclick="openChat();return false;">Try the assistant</a>
   </div>
@@ -573,7 +607,7 @@ PAGE = """<!DOCTYPE html>
     </div>
     <div class="r result">
       <div class="big" id="lost">£4,160</div>
-      <p>potentially slipping away every month. The assistant catches those from <b style="color:#fff">£29/month</b>.</p>
+      <p>potentially slipping away every month. The assistant catches those from <b style="color:#fff">£39/month</b>.</p>
       <button class="btn" style="margin-top:18px" onclick="openChat()">Stop the leak →</button>
     </div>
   </div>
@@ -600,18 +634,48 @@ PAGE = """<!DOCTYPE html>
   </div>
 </div></section>
 
+<section id="proof"><div class="wrap">
+  <div class="head reveal"><div class="eyebrow">Proof it works</div><h2 class="disp">Already live on a real business</h2><p>Frontdesk isn't a mock-up — here's one working on a paying client's website right now.</p></div>
+  <div class="casegrid">
+    <div class="case reveal">
+      <div class="case-tag">Live client · Portsmouth</div>
+      <h3>AU Decorating</h3>
+      <p>A painting &amp; decorating firm with a 10/10 Checkatrade rating. Their Frontdesk assistant answers enquiries 24/7, asks the right questions, and drops qualified leads — with the customer's job photos — straight into the owner's inbox.</p>
+      <a class="case-link" href="https://www.au-decorating.com" target="_blank">See the assistant live on their site →</a>
+    </div>
+    <div class="case soft reveal">
+      <div class="case-tag">The result</div>
+      <p class="big-quote">Enquiries that used to arrive after hours now get answered instantly and land as tidy, ready-to-call leads — nothing slips through.</p>
+      <p class="muted-note">More client stories coming as Frontdesk grows.</p>
+    </div>
+  </div>
+</div></section>
+
 <section id="pricing" style="background:#fff;"><div class="wrap">
   <div class="head reveal"><div class="eyebrow">Keen early-bird pricing</div><h2 class="disp">Simple plans. Free trial. Free setup.</h2><p>Try it free for 14 days — no card needed. Cancel anytime.</p></div>
   <div class="pricing">
-    <div class="plan reveal"><div class="tag">Starter</div><div class="price">£29<span>/mo</span></div>
+    <div class="plan reveal"><div class="tag">Starter</div><div class="price">£39<span>/mo</span></div>
       <ul><li>Assistant on your website</li><li>Answers customer FAQs</li><li>Leads straight to your inbox</li><li>Free setup</li></ul>
       <button class="btn dark" onclick="openChat()">Start free</button></div>
-    <div class="plan pop reveal"><span class="pop-tag">Most popular</span><div class="tag">Professional</div><div class="price">£49<span>/mo</span></div>
+    <div class="plan pop reveal"><span class="pop-tag">Most popular</span><div class="tag">Professional</div><div class="price">£69<span>/mo</span></div>
       <ul><li>Everything in Starter</li><li>Trained on your services &amp; prices</li><li>Smart qualifying questions</li><li>Styled to match your brand</li></ul>
       <button class="btn" onclick="openChat()">Start free</button></div>
-    <div class="plan reveal"><div class="tag">Premium</div><div class="price">£89<span>/mo</span></div>
+    <div class="plan reveal"><div class="tag">Premium</div><div class="price">£119<span>/mo</span></div>
       <ul><li>Everything in Professional</li><li>WhatsApp / text lead alerts</li><li>Priority support</li><li>Monthly tweaks &amp; tuning</li></ul>
       <button class="btn dark" onclick="openChat()">Start free</button></div>
+  </div>
+</div></section>
+
+<section id="website"><div class="wrap">
+  <div class="head reveal"><div class="eyebrow">No website? No problem</div><h2 class="disp">Need a website too? I can build that.</h2><p>The assistant can live on a simple page I make for you — or I can build you a proper website to put it on. A paid add-on, quoted to suit what you need.</p></div>
+  <div class="feat">
+    <div class="fc reveal"><div class="ic">✍️</div><h3>One page or full site</h3><p>From a smart single landing page to a few pages with a gallery — whatever fits your business.</p></div>
+    <div class="fc reveal"><div class="ic">🎨</div><h3>Designed around you</h3><p>Clean, modern and branded to your trade — not a tired template.</p></div>
+    <div class="fc reveal"><div class="ic">🤖</div><h3>Assistant built in</h3><p>Your Frontdesk assistant comes ready-installed, catching leads from day one.</p></div>
+  </div>
+  <div style="text-align:center;margin-top:36px;">
+    <a class="btn dark" href="https://www.au-decorating.com" target="_blank">See a site I built →</a>
+    <button class="btn" onclick="openChat()" style="margin-left:10px;">Ask about a website</button>
   </div>
 </div></section>
 
@@ -622,6 +686,10 @@ PAGE = """<!DOCTYPE html>
     <details><summary>Will it book appointments into my calendar?</summary><p>It captures the enquiry — name, what they want, preferred timing and contact — and sends it to you to confirm. It won't promise a slot it can't see, which keeps customers happy. Full calendar booking is available as a custom add-on.</p></details>
     <details><summary>How long until it's live?</summary><p>Usually within a few days of our first chat — most businesses are up and running inside a week. Here's how it goes: we have a quick chat about your services, prices and the questions your customers tend to ask; I build and train your assistant on all of it; then I send you a private link to try it yourself and tell me anything you'd like changed. Once you're happy, I add it to your site (or a page I set up for you) and the leads start landing in your inbox. You're kept in the loop the whole way, and the setup is entirely on me — no tech work on your side.</p></details>
     <details><summary>What if I want to cancel?</summary><p>No lock-in. Cancel anytime. The free 14-day trial means you can see the leads roll in before you pay a penny.</p></details>
+    <details><summary>How much does it cost?</summary><p>Plans start at £39/month, with free setup and a free 14-day trial — no card needed. Most businesses go for Professional at £69/month. Bigger or multi-location needs are quoted to suit. Full breakdown is in the pricing section above.</p></details>
+    <details><summary>What kind of businesses is it for?</summary><p>Local service businesses — hairdressers, barbers, builders, plumbers, electricians, decorators, dog groomers, beauticians, garages, cleaners and more. If customers message you with questions and you can't always reply straight away, it'll pay for itself.</p></details>
+    <details><summary>Where do my leads go — is my data safe?</summary><p>Every enquiry lands straight in your email inbox, tidied into a clean summary. Your details and your customers' details are only ever used to follow up on enquiries — never sold or used for advertising.</p></details>
+    <details><summary>Do I need to be techy?</summary><p>Not at all. I set the whole thing up for you — there's nothing to install and not a line of code to touch. You just get the leads.</p></details>
   </div>
 </div></section>
 
@@ -767,19 +835,39 @@ def chat():
     if sid not in conversations:
         conversations[sid] = [{"role": "system", "content": SYSTEM_PROMPT}]
     convo = conversations[sid]
-    convo.append({"role": "user", "content": request.json.get("message", "")})
+    user_msg = request.json.get("message", "")
+    convo.append({"role": "user", "content": user_msg})
 
-    resp = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=convo,
-        max_tokens=150,
-    )
-    reply = resp.choices[0].message.content
+    try:
+        resp = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=convo,
+            max_tokens=160,
+            timeout=20,
+        )
+        reply = resp.choices[0].message.content or ""
+    except Exception as e:
+        print(f"Chat completion failed: {e}")
+        convo.pop()
+        return jsonify({"reply": "Sorry — I had a brief hiccup there. Could you send that again?"})
+
+    # The assistant signals it has finished gathering the essentials with an
+    # internal READY tag. Strip it so the visitor never sees it.
+    lead_ready = bool(re.search(r"\[\[?\s*READY\s*\]?\]", reply, re.I))
+    reply = re.sub(r"\[\[?\s*READY\s*\]?\]", "", reply).strip()
+    if not reply:
+        reply = ("Brilliant — that's everything I need. Andra will be in touch "
+                 "personally, usually the same day.")
     convo.append({"role": "assistant", "content": reply})
 
+    # Only email once the assistant has actually wrapped up (READY tag), so the
+    # business type and what they want are captured - not the instant a contact
+    # detail appears. Closing-phrase / long-chat are safety nets so a lead is
+    # never lost. Sent at most once per visitor.
     if sid not in notified and has_contact_info(convo):
-        notified.add(sid)
-        threading.Thread(target=send_lead_email, args=(list(convo),), daemon=True).start()
+        if lead_ready or _looks_like_closing(user_msg) or len(convo) >= 16:
+            notified.add(sid)
+            threading.Thread(target=send_lead_email, args=(list(convo),), daemon=True).start()
 
     return jsonify({"reply": reply})
 
