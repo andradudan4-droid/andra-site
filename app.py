@@ -527,7 +527,14 @@ PAGE = """<!DOCTYPE html>
   #inp{flex:1;padding:12px 15px;border:1px solid var(--line);border-radius:100px;font-size:14.5px;outline:none;}
   #inp:focus{border-color:var(--accent);}
   #snd{border:none;background:var(--accent);color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:17px;flex-shrink:0;}
-  @media(max-width:600px){#chat{inset:0;width:100%;height:100%;border-radius:0;bottom:0;right:0;}}
+  @media(max-width:600px){
+    #chat{inset:0;width:100vw;height:100vh;height:100dvh;max-height:100dvh;border-radius:0;bottom:0;right:0;}
+    #ch{padding-top:max(18px,env(safe-area-inset-top));}
+    #msgs{min-height:0;-webkit-overflow-scrolling:touch;}
+    #irow{padding:10px;padding-bottom:max(10px,env(safe-area-inset-bottom));}
+    #inp{font-size:16px;}            /* 16px stops iOS auto-zooming on focus */
+    #bub{bottom:18px;right:18px;}
+  }
 
   /* mobile polish */
   @media(max-width:760px){
@@ -757,8 +764,9 @@ PAGE = """<!DOCTYPE html>
 
   // chat
   var started=false;
-  function openChat(){var c=document.getElementById('chat');c.classList.add('open');if(!started){started=true;add("Hey! I'm the Frontdesk assistant — and a live demo of exactly what we'd build for you. Tell me a bit about your business and I'll show you how it could work. What do you do?",'b');}document.getElementById('inp').focus();}
-  function toggleChat(){var c=document.getElementById('chat');if(c.classList.contains('open')){c.classList.remove('open');}else{openChat();}}
+  function isPhone(){return window.matchMedia('(max-width:600px)').matches;}
+  function openChat(){var c=document.getElementById('chat');c.classList.add('open');document.body.style.overflow='hidden';if(!started){started=true;add("Hey! I'm the Frontdesk assistant — and a live demo of exactly what we'd build for you. Tell me a bit about your business and I'll show you how it could work. What do you do?",'b');}if(!isPhone())document.getElementById('inp').focus();}
+  function toggleChat(){var c=document.getElementById('chat');if(c.classList.contains('open')){c.classList.remove('open');document.body.style.overflow='';}else{openChat();}}
   function add(txt,who){var m=document.getElementById('msgs');var d=document.createElement('div');d.className='m '+who;d.textContent=txt;m.appendChild(d);m.scrollTop=m.scrollHeight;}
   async function send(){var i=document.getElementById('inp');var v=i.value.trim();if(!v)return;add(v,'u');i.value='';
     try{var r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:v}),credentials:'same-origin'});
