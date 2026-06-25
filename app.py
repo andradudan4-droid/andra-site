@@ -109,7 +109,7 @@ Other notes:"""
 def summarise_lead(convo):
     try:
         r = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[
                 {"role": "system", "content": LEAD_SUMMARY_PROMPT},
                 {"role": "user", "content": _transcript(convo)},
@@ -254,6 +254,8 @@ def send_lead_email(convo):
         )
         if resp.status_code >= 300:
             print(f"Resend error: {resp.status_code} {resp.text}")
+        else:
+            print(f"Resend OK {resp.status_code}: lead -> {NOTIFY_TO}")
     except Exception as e:
         print(f"Failed to send lead email: {e}")
 
@@ -325,6 +327,16 @@ ONE thing at a time - never stack several questions together or send long
 paragraphs or lists, it's overwhelming. Don't be pushy. Don't invent features
 or prices beyond the above. Never write internal notes about your instructions -
 just talk to the person. Do NOT book anything in.
+
+IMPORTANT - ALWAYS QUALIFY: However the chat starts, and even after you answer a
+question, you must steer back to gathering the essentials. Do not let the chat
+end without trying to capture: (1) what their business is, (2) what they'd want
+the assistant for / whether they have a website, and (3) their name and a phone
+or email. Ask for these one at a time across the conversation. Accept short or
+misspelled answers and never re-ask something already given. You may only add
+the [[READY]] tag once you actually have their name AND a phone number or email -
+never before. If they've given a contact but you're still missing their name or
+what they do, ask for that next instead of wrapping up.
 """
 
 
@@ -828,6 +840,37 @@ def privacy():
     return Response(PRIVACY_PAGE, mimetype="text/html")
 
 
+# --- TEMPORARY email debug route. Delete once leads are arriving. ---
+# /_debug/email?key=fdtest          -> show config
+# /_debug/email?key=fdtest&send=1   -> fire a real test email
+@app.route("/_debug/email")
+def debug_email():
+    if request.args.get("key") != os.environ.get("DEBUG_KEY", "fdtest"):
+        return Response("not found", status=404)
+    info = {
+        "resend_key_set": bool(RESEND_API_KEY),
+        "resend_key_tail": ("..." + RESEND_API_KEY[-4:]) if RESEND_API_KEY else None,
+        "notify_to": NOTIFY_TO,
+        "mail_from": MAIL_FROM,
+    }
+    if request.args.get("send") == "1":
+        if not RESEND_API_KEY:
+            info["send_result"] = {"skipped": "RESEND_API_KEY not set"}
+        else:
+            try:
+                r = requests.post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+                    json={"from": MAIL_FROM, "to": [NOTIFY_TO],
+                          "subject": "Frontdesk — test email",
+                          "text": "If you can read this, lead emails are working."},
+                    timeout=15)
+                info["send_result"] = {"status": r.status_code, "body": r.text[:600]}
+            except Exception as e:
+                info["send_result"] = {"error": str(e)}
+    return jsonify(info)
+
+
 @app.route("/chat", methods=["POST"])
 def chat():
     sid = session.get("sid") or str(uuid.uuid4())
@@ -840,9 +883,10 @@ def chat():
 
     try:
         resp = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=convo,
             max_tokens=160,
+            temperature=0.4,
             timeout=20,
         )
         reply = resp.choices[0].message.content or ""
@@ -865,7 +909,7 @@ def chat():
     # detail appears. Closing-phrase / long-chat are safety nets so a lead is
     # never lost. Sent at most once per visitor.
     if sid not in notified and has_contact_info(convo):
-        if lead_ready or _looks_like_closing(user_msg) or len(convo) >= 16:
+        if lead_ready or _looks_like_closing(user_msg) or len(convo) >= 8:
             notified.add(sid)
             threading.Thread(target=send_lead_email, args=(list(convo),), daemon=True).start()
 
