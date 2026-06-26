@@ -40,6 +40,10 @@ CONTACT_PHONE = "07493 396628"
 CONTACT_PHONE_TEL = "07493396628"
 CONTACT_EMAIL = "andradudan4@gmail.com"
 
+# Paste your Stripe payment link here (the £45/month subscription link).
+# Until it's set, the "Get started" buttons open the chat instead.
+STRIPE_LINK = "https://buy.stripe.com/8x2dR9cWe1YT89u11FbjW00"
+
 # ---------------------------------------------------------------------------
 #  Lead detection + organised lead email
 # ---------------------------------------------------------------------------
@@ -279,26 +283,20 @@ WHAT {BRAND.upper()} OFFERS:
 - It captures booking ENQUIRIES (name, what they want, preferred timing,
   contact) - the owner confirms the actual appointment. It does NOT book into
   their calendar, so it never promises a slot it can't see.
-- NO WEBSITE? No problem. Andra can also build the business a simple, smart
-  website or landing page to put the assistant on. This is a separate paid
-  add-on, priced on a custom quote depending on what they want (a one-page
-  site, a few pages, photos/gallery, etc.). The monthly assistant plans above
-  do NOT include a full custom website - mention the website build as an extra
-  if they don't have one or want a better one.
+- WEBSITE INCLUDED: the £45/month plan includes a custom website built for the
+  business with the assistant on it, hosting, and ongoing updates - it's all in
+  one price. If they already have a website, the assistant can go on a page Andra
+  sets up for them.
 
 HOW IT WORKS (3 steps):
-1. You tell Andra about your business. 2. Andra trains and installs your
-assistant (usually within a few days). 3. Leads start landing in your inbox.
+1. You tell Andra about your business. 2. Andra builds your website and trains
+your assistant (usually within a few days). 3. Leads start landing in your inbox.
 
-PRICING (real - you may quote it; all plans include free setup and a free
-14-day trial, no card needed):
-- Starter — £39/month: assistant answers FAQs and captures leads to your inbox.
-- Professional — £69/month (most popular): everything in Starter, trained on
-  your services & prices, smart qualifying questions, styled to match your brand.
-- Premium — £119/month: everything in Professional, plus WhatsApp/text lead
-  alerts, priority support and monthly tweaks.
-Bigger or multi-location needs are quoted custom. Prices are intentionally keen
-because Andra is building up her first clients.
+PRICING (real - you may quote it):
+- £45/month, everything included: a custom website, the AI assistant trained on
+  your services and prices, hosting, and ongoing updates. One simple price.
+- No tiers, no setup fee. Bigger or multi-location needs are quoted custom.
+Prices are intentionally keen because Andra is building up her first clients.
 
 YOUR TWO JOBS:
 1. Answer questions about the service warmly and accurately.
@@ -593,8 +591,8 @@ PAGE = """<!DOCTYPE html>
     <h1 class="disp">Never miss another <span class="rotor">customer</span>.</h1>
     <p class="sub">I build smart chat assistants for local businesses. They answer your customers instantly, ask the right questions, and drop every qualified lead straight into your inbox — 24/7, even when you're on the tools or fully booked.</p>
     <div class="cta">
-      <button class="btn" onclick="openChat()">Start free for 14 days</button>
-      <button class="btn ghost" onclick="openChat()">See it in action ↓</button>
+      <button class="btn" onclick="subscribe()">Get started — £45/mo</button>
+      <button class="btn ghost" onclick="openChat()">Try the assistant ↓</button>
     </div>
   </div>
   <div class="preview reveal">
@@ -626,7 +624,7 @@ PAGE = """<!DOCTYPE html>
     </div>
     <div class="r result">
       <div class="big" id="lost">£4,160</div>
-      <p>potentially slipping away every month. The assistant catches those from <b style="color:#fff">£39/month</b>.</p>
+      <p>potentially slipping away every month. The assistant catches those — website, assistant and all — for <b style="color:#fff">£45/month</b>.</p>
       <button class="btn" style="margin-top:18px" onclick="openChat()">Stop the leak →</button>
     </div>
   </div>
@@ -671,18 +669,13 @@ PAGE = """<!DOCTYPE html>
 </div></section>
 
 <section id="pricing" style="background:#fff;"><div class="wrap">
-  <div class="head reveal"><div class="eyebrow">Keen early-bird pricing</div><h2 class="disp">Simple plans. Free trial. Free setup.</h2><p>Try it free for 14 days — no card needed. Cancel anytime.</p></div>
-  <div class="pricing">
-    <div class="plan reveal"><div class="tag">Starter</div><div class="price">£39<span>/mo</span></div>
-      <ul><li>Assistant on your website</li><li>Answers customer FAQs</li><li>Leads straight to your inbox</li><li>Free setup</li></ul>
-      <button class="btn dark" onclick="openChat()">Start free</button></div>
-    <div class="plan pop reveal"><span class="pop-tag">Most popular</span><div class="tag">Professional</div><div class="price">£69<span>/mo</span></div>
-      <ul><li>Everything in Starter</li><li>Trained on your services &amp; prices</li><li>Smart qualifying questions</li><li>Styled to match your brand</li></ul>
-      <button class="btn" onclick="openChat()">Start free</button></div>
-    <div class="plan reveal"><div class="tag">Premium</div><div class="price">£119<span>/mo</span></div>
-      <ul><li>Everything in Professional</li><li>WhatsApp / text lead alerts</li><li>Priority support</li><li>Monthly tweaks &amp; tuning</li></ul>
-      <button class="btn dark" onclick="openChat()">Start free</button></div>
+  <div class="head reveal"><div class="eyebrow">Simple pricing</div><h2 class="disp">One plan. Everything included.</h2><p>No tiers, no setup fees, no surprises — just one price that covers the lot.</p></div>
+  <div class="pricing" style="grid-template-columns:1fr;max-width:460px;margin:0 auto;">
+    <div class="plan pop reveal"><span class="pop-tag">Everything included</span><div class="tag">Complete</div><div class="price">£45<span>/mo</span></div>
+      <ul><li>Your own custom website</li><li>AI assistant trained on your services &amp; prices</li><li>Smart qualifying questions</li><li>Every lead straight to your inbox</li><li>Hosting included</li><li>I keep it updated for you</li></ul>
+      <button class="btn" onclick="subscribe()">Get started</button></div>
   </div>
+  <p class="reveal" style="text-align:center;margin-top:18px;color:#667;">Not sure yet? <a href="#" onclick="openChat();return false;" style="color:#7c5cff;">Have a quick chat with the assistant first →</a></p>
 </div></section>
 
 <section id="website"><div class="wrap">
@@ -704,8 +697,8 @@ PAGE = """<!DOCTYPE html>
     <details><summary>Do I need a website already?</summary><p>Not necessarily — it can live on a simple page I set up, or link straight from your Google profile. If you've got a site, even better, it slots right in. And if you'd like a proper website of your own, I can build you one too as a paid add-on, quoted to suit what you need.</p></details>
     <details><summary>Will it book appointments into my calendar?</summary><p>It captures the enquiry — name, what they want, preferred timing and contact — and sends it to you to confirm. It won't promise a slot it can't see, which keeps customers happy. Full calendar booking is available as a custom add-on.</p></details>
     <details><summary>How long until it's live?</summary><p>Usually within a few days of our first chat — most businesses are up and running inside a week. Here's how it goes: we have a quick chat about your services, prices and the questions your customers tend to ask; I build and train your assistant on all of it; then I send you a private link to try it yourself and tell me anything you'd like changed. Once you're happy, I add it to your site (or a page I set up for you) and the leads start landing in your inbox. You're kept in the loop the whole way, and the setup is entirely on me — no tech work on your side.</p></details>
-    <details><summary>What if I want to cancel?</summary><p>No lock-in. Cancel anytime. The free 14-day trial means you can see the leads roll in before you pay a penny.</p></details>
-    <details><summary>How much does it cost?</summary><p>Plans start at £39/month, with free setup and a free 14-day trial — no card needed. Most businesses go for Professional at £69/month. Bigger or multi-location needs are quoted to suit. Full breakdown is in the pricing section above.</p></details>
+    <details><summary>What if I want to cancel?</summary><p>No lock-in — cancel anytime. While you're subscribed your website and assistant stay live and I keep them updated; if you stop, they're simply paused.</p></details>
+    <details><summary>How much does it cost?</summary><p>One simple price: £45/month, everything included — your custom website, the AI assistant trained on your business, hosting, and ongoing updates. No setup fee and no tiers. Bigger or multi-location needs are quoted to suit.</p></details>
     <details><summary>What kind of businesses is it for?</summary><p>Local service businesses — hairdressers, barbers, builders, plumbers, electricians, decorators, dog groomers, beauticians, garages, cleaners and more. If customers message you with questions and you can't always reply straight away, it'll pay for itself.</p></details>
     <details><summary>Where do my leads go — is my data safe?</summary><p>Every enquiry lands straight in your email inbox, tidied into a clean summary. Your details and your customers' details are only ever used to follow up on enquiries — never sold or used for advertising.</p></details>
     <details><summary>Do I need to be techy?</summary><p>Not at all. I set the whole thing up for you — there's nothing to install and not a line of code to touch. You just get the leads.</p></details>
@@ -764,6 +757,8 @@ PAGE = """<!DOCTYPE html>
 
   // chat
   var started=false;
+  var STRIPE_URL="__STRIPE__";
+  function subscribe(){ if(STRIPE_URL){ window.open(STRIPE_URL,'_blank'); } else { openChat(); } }
   function isPhone(){return window.matchMedia('(max-width:600px)').matches;}
   function openChat(){var c=document.getElementById('chat');c.classList.add('open');document.body.style.overflow='hidden';if(!started){started=true;add("Hey! I'm the Frontdesk assistant — and a live demo of exactly what we'd build for you. Tell me a bit about your business and I'll show you how it could work. What do you do?",'b');}if(!isPhone())document.getElementById('inp').focus();}
   function toggleChat(){var c=document.getElementById('chat');if(c.classList.contains('open')){c.classList.remove('open');document.body.style.overflow='';}else{openChat();}}
@@ -777,6 +772,7 @@ PAGE = """<!DOCTYPE html>
 """
 
 PAGE = (PAGE
+        .replace("__STRIPE__", STRIPE_LINK)
         .replace("__NAME__", CONTACT_NAME)
         .replace("__PHONE_TEL__", CONTACT_PHONE_TEL)
         .replace("__PHONE__", CONTACT_PHONE)
@@ -846,37 +842,6 @@ def home():
 @app.route("/privacy")
 def privacy():
     return Response(PRIVACY_PAGE, mimetype="text/html")
-
-
-# --- TEMPORARY email debug route. Delete once leads are arriving. ---
-# /_debug/email?key=fdtest          -> show config
-# /_debug/email?key=fdtest&send=1   -> fire a real test email
-@app.route("/_debug/email")
-def debug_email():
-    if request.args.get("key") != os.environ.get("DEBUG_KEY", "fdtest"):
-        return Response("not found", status=404)
-    info = {
-        "resend_key_set": bool(RESEND_API_KEY),
-        "resend_key_tail": ("..." + RESEND_API_KEY[-4:]) if RESEND_API_KEY else None,
-        "notify_to": NOTIFY_TO,
-        "mail_from": MAIL_FROM,
-    }
-    if request.args.get("send") == "1":
-        if not RESEND_API_KEY:
-            info["send_result"] = {"skipped": "RESEND_API_KEY not set"}
-        else:
-            try:
-                r = requests.post(
-                    "https://api.resend.com/emails",
-                    headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
-                    json={"from": MAIL_FROM, "to": [NOTIFY_TO],
-                          "subject": "Frontdesk — test email",
-                          "text": "If you can read this, lead emails are working."},
-                    timeout=15)
-                info["send_result"] = {"status": r.status_code, "body": r.text[:600]}
-            except Exception as e:
-                info["send_result"] = {"error": str(e)}
-    return jsonify(info)
 
 
 @app.route("/chat", methods=["POST"])
