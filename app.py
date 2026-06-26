@@ -394,7 +394,11 @@ PAGE = """<!DOCTYPE html>
   nav .nl a{color:rgba(255,255,255,.72);font-size:14.5px;font-weight:500;}
   nav .nl a:hover{color:#fff;}
   nav .btn{padding:10px 20px;font-size:14px;}
-  @media(max-width:760px){nav .nl a:not(.btn){display:none;}}
+  @media(max-width:760px){
+    nav .nl a:not(.pay-link){display:none;}
+    nav .row{padding:14px 16px;}
+    nav .nl a.pay-link{font-size:13.5px;}
+  }
 
   /* hero */
   .hero{background:var(--ink);color:#fff;position:relative;overflow:hidden;padding:88px 0 96px;}
@@ -581,8 +585,7 @@ PAGE = """<!DOCTYPE html>
     <a href="#pricing">Pricing</a>
     <a href="#website">Websites</a>
     <a href="#faq">FAQ</a>
-    <a href="/pay">Existing customers</a>
-    <a class="btn" href="#" onclick="openChat();return false;">Try the assistant</a>
+    <a class="pay-link" href="/pay">Existing customers</a>
   </div>
 </div></nav>
 
@@ -676,7 +679,7 @@ PAGE = """<!DOCTYPE html>
       <ul><li>Your own custom website</li><li>AI assistant trained on your services &amp; prices</li><li>Smart qualifying questions</li><li>Every lead straight to your inbox</li><li>Hosting included</li><li>I keep it updated for you</li></ul>
       <button class="btn" onclick="openChat()">Get started</button></div>
   </div>
-  <p class="reveal" style="text-align:center;margin-top:18px;color:#667;">We have a quick chat and I build it for you first — you only set up payment once you're happy. <a href="#" onclick="openChat();return false;" style="color:#7c5cff;">Start the chat →</a></p>
+  <p class="reveal" style="text-align:center;margin-top:18px;color:#667;">We have a quick chat and I build it for you first — you only set up payment once you're happy.</p>
 </div></section>
 
 <section id="website"><div class="wrap">
@@ -714,7 +717,7 @@ PAGE = """<!DOCTYPE html>
   <div class="links">Or reach me: <a href="tel:__PHONE_TEL__">__PHONE__</a> · <a href="mailto:__EMAIL__">__EMAIL__</a></div>
 </div></div></section>
 
-<footer>© <span id="yr"></span> Frontdesk · AI assistants for local businesses · Portsmouth · by __NAME__ · <a href="/privacy" style="color:#7c5cff;">Privacy Policy</a></footer>
+<footer>© <span id="yr"></span> Frontdesk · AI assistants for local businesses · Portsmouth · by __NAME__ · <a href="/privacy" style="color:#7c5cff;">Privacy Policy</a> · <a href="/terms" style="color:#7c5cff;">Terms</a></footer>
 
 <div id="bub" onclick="toggleChat()">
   <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -877,10 +880,80 @@ PAY_PAGE = f"""<!DOCTYPE html><html lang="en"><head>
       <li>Cancel anytime</li>
     </ul>
     {_pay_btn}
-    <p class="note">Secure checkout by Stripe. You can pay by card.</p>
+    <p class="note">Secure checkout by Stripe. You can pay by card.<br>By subscribing you agree to our <a href="/terms">Terms of Service</a>.</p>
   </div>
   <p class="note">New here and not set up yet? <a href="/">Start on the home page</a> — we'll have a quick chat and build your site first, then you come back here to pay.</p>
   <div class="foot">&copy; {BRAND} · Portsmouth · <a href="/">Back to home</a></div>
+</div></body></html>"""
+
+
+TERMS_PAGE = f"""<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms of Service — {BRAND}</title>
+<meta name="theme-color" content="#15131d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315131d'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='%23ff5a3c' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<style>
+  body{{margin:0;background:#f7f3ec;color:#15131d;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.7;}}
+  .bar{{background:#15131d;padding:20px 26px;}}
+  .bar a{{color:#fff;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-.02em;}}
+  .bar a span{{color:#ff5a3c;}}
+  .wrap{{max-width:740px;margin:0 auto;padding:48px 26px 80px;}}
+  h1{{font-size:34px;letter-spacing:-.02em;margin:0 0 6px;}}
+  .lead{{color:#6c6760;margin:0 0 30px;}}
+  h2{{font-size:19px;margin:34px 0 8px;}}
+  a{{color:#d6452a;}}
+  .foot{{color:#a59e92;font-size:13px;margin-top:50px;border-top:1px solid #e4ded2;padding-top:20px;}}
+</style></head><body>
+<div class="bar"><a href="/">Front<span>desk</span></a></div>
+<div class="wrap">
+  <h1>Terms of Service</h1>
+  <p class="lead">The plain-English terms for using {BRAND}. By subscribing, you agree to these.</p>
+
+  <p>These terms are between you (the customer) and {CONTACT_NAME}, trading as {BRAND} (&ldquo;we&rdquo;, &ldquo;us&rdquo;). They apply when you sign up for and use our website and AI assistant service.</p>
+
+  <h2>1. What you get</h2>
+  <p>A custom website with an AI assistant trained on your business, hosted by us, with the leads it captures sent to your inbox. We include reasonable ongoing updates and tweaks. Larger pieces of work &mdash; such as a full redesign, extra pages or new features beyond the original build &mdash; are quoted and agreed separately.</p>
+
+  <h2>2. Price and payment</h2>
+  <p>The service is a one-off setup fee of &pound;45 plus &pound;30 per month. Payments are taken securely through Stripe; your first payment is the setup fee plus your first month, and the &pound;30 monthly fee then recurs automatically until you cancel. Prices may change in future, but we&rsquo;ll always give you notice before any change affects you.</p>
+
+  <h2>3. The setup fee</h2>
+  <p>The &pound;45 setup fee covers the work of building and setting up your site and assistant. Because that work is done upfront, the setup fee is non-refundable once we&rsquo;ve started building.</p>
+
+  <h2>4. Failed payments</h2>
+  <p>If a monthly payment fails, Stripe will retry and let you know. If it stays unpaid, we may pause your website and assistant until payment is back up to date. We&rsquo;ll give you reasonable notice before pausing anything.</p>
+
+  <h2>5. Cancelling</h2>
+  <p>There&rsquo;s no lock-in &mdash; you can cancel anytime. Cancelling stops future monthly payments; we don&rsquo;t refund the current month. When your subscription ends, your website and assistant are taken down or paused, as they&rsquo;re hosted and maintained by us as part of the ongoing fee.</p>
+
+  <h2>6. Hosting and ownership</h2>
+  <p>While you&rsquo;re subscribed, we host and maintain your website, its code and the assistant. These remain ours and stay live for as long as your subscription is active. Your own content &mdash; your business name, logo, photos and text &mdash; remains yours.</p>
+
+  <h2>7. Your domain</h2>
+  <p>If you already own your domain name (e.g. yourbusiness.co.uk), it stays yours. If we register a domain on your behalf as part of the service, it remains under our account while you&rsquo;re subscribed; we&rsquo;ll discuss transferring it to you if you&rsquo;d like to take it with you.</p>
+
+  <h2>8. Your content and conduct</h2>
+  <p>You confirm that any logos, images, text or other material you give us are yours to use, or that you have permission to use them. The service must not be used for anything unlawful.</p>
+
+  <h2>9. What the assistant does (and doesn&rsquo;t)</h2>
+  <p>The AI assistant answers customer questions and captures enquiries to pass to you. It doesn&rsquo;t guarantee a particular number of leads or bookings, and it doesn&rsquo;t confirm appointments on your behalf &mdash; you decide which enquiries to take forward.</p>
+
+  <h2>10. Availability and liability</h2>
+  <p>We aim to keep your site and assistant running reliably, but we can&rsquo;t guarantee they&rsquo;ll be available 100% of the time (hosting providers and other services can have outages). To the extent the law allows, we&rsquo;re not liable for lost business, lost profits or other indirect losses arising from downtime or from the service. Nothing in these terms limits liability where it can&rsquo;t legally be limited.</p>
+
+  <h2>11. Privacy</h2>
+  <p>How we handle data is set out in our <a href="/privacy">Privacy Policy</a>.</p>
+
+  <h2>12. Changes to these terms</h2>
+  <p>We may update these terms from time to time. The version on this page is the current one, and we&rsquo;ll let you know if we make a significant change.</p>
+
+  <h2>13. Governing law</h2>
+  <p>These terms are governed by the law of England and Wales.</p>
+
+  <h2>14. Contact</h2>
+  <p>Questions about these terms? Email <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a> or call <a href="tel:{CONTACT_PHONE_TEL}">{CONTACT_PHONE}</a>.</p>
+
+  <div class="foot">&copy; {BRAND} · AI assistants for local businesses · Portsmouth · <a href="/">Back to home</a></div>
 </div></body></html>"""
 
 
@@ -899,6 +972,11 @@ def privacy():
 @app.route("/pay")
 def pay():
     return Response(PAY_PAGE, mimetype="text/html")
+
+
+@app.route("/terms")
+def terms():
+    return Response(TERMS_PAGE, mimetype="text/html")
 
 
 # --- TEMPORARY email debug route. Delete once leads are arriving. ---
