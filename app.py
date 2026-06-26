@@ -581,6 +581,7 @@ PAGE = """<!DOCTYPE html>
     <a href="#pricing">Pricing</a>
     <a href="#website">Websites</a>
     <a href="#faq">FAQ</a>
+    <a href="/pay">Existing customers</a>
     <a class="btn" href="#" onclick="openChat();return false;">Try the assistant</a>
   </div>
 </div></nav>
@@ -591,8 +592,7 @@ PAGE = """<!DOCTYPE html>
     <h1 class="disp">Never miss another <span class="rotor">customer</span>.</h1>
     <p class="sub">I build smart chat assistants for local businesses. They answer your customers instantly, ask the right questions, and drop every qualified lead straight into your inbox — 24/7, even when you're on the tools or fully booked.</p>
     <div class="cta">
-      <button class="btn" onclick="subscribe()">Get started — £45/mo</button>
-      <button class="btn ghost" onclick="openChat()">Try the assistant ↓</button>
+      <button class="btn" onclick="openChat()">Try the assistant</button>
     </div>
   </div>
   <div class="preview reveal">
@@ -673,9 +673,9 @@ PAGE = """<!DOCTYPE html>
   <div class="pricing" style="grid-template-columns:1fr;max-width:460px;margin:0 auto;">
     <div class="plan pop reveal"><span class="pop-tag">Everything included</span><div class="tag">Complete</div><div class="price">£45<span>/mo</span></div>
       <ul><li>Your own custom website</li><li>AI assistant trained on your services &amp; prices</li><li>Smart qualifying questions</li><li>Every lead straight to your inbox</li><li>Hosting included</li><li>I keep it updated for you</li></ul>
-      <button class="btn" onclick="subscribe()">Get started</button></div>
+      <button class="btn" onclick="openChat()">Get started</button></div>
   </div>
-  <p class="reveal" style="text-align:center;margin-top:18px;color:#667;">Not sure yet? <a href="#" onclick="openChat();return false;" style="color:#7c5cff;">Have a quick chat with the assistant first →</a></p>
+  <p class="reveal" style="text-align:center;margin-top:18px;color:#667;">We have a quick chat and I build it for you first — you only set up payment once you're happy. <a href="#" onclick="openChat();return false;" style="color:#7c5cff;">Start the chat →</a></p>
 </div></section>
 
 <section id="website"><div class="wrap">
@@ -832,6 +832,55 @@ PRIVACY_PAGE = f"""<!DOCTYPE html><html lang="en"><head>
 </div></body></html>"""
 
 
+_pay_btn = (f'<a class="pay-btn" href="{STRIPE_LINK}">Start my £45/month plan →</a>'
+            if STRIPE_LINK else
+            '<p style="color:#a59e92">Payment link not set up yet — please get in touch.</p>')
+
+PAY_PAGE = f"""<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer payments — {BRAND}</title>
+<meta name="theme-color" content="#15131d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315131d'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='%23ff5a3c' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<style>
+  body{{margin:0;background:#f7f3ec;color:#15131d;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.7;}}
+  .bar{{background:#15131d;padding:20px 26px;}}
+  .bar a{{color:#fff;text-decoration:none;font-weight:800;font-size:20px;letter-spacing:-.02em;}}
+  .bar a span{{color:#ff5a3c;}}
+  .wrap{{max-width:560px;margin:0 auto;padding:48px 26px 80px;}}
+  h1{{font-size:32px;letter-spacing:-.02em;margin:0 0 6px;}}
+  .lead{{color:#6c6760;margin:0 0 30px;}}
+  .card{{background:#fff;border:1px solid #e4ded2;border-radius:18px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,.05);}}
+  .price{{font-size:40px;font-weight:800;letter-spacing:-.02em;}}
+  .price span{{font-size:17px;font-weight:600;color:#6c6760;}}
+  ul{{padding-left:20px;margin:18px 0 26px;}}
+  li{{margin:7px 0;}}
+  .pay-btn{{display:block;text-align:center;background:#6c4cff;color:#fff;text-decoration:none;font-weight:700;font-size:17px;padding:16px;border-radius:12px;}}
+  .pay-btn:hover{{background:#5a3ce0;}}
+  .note{{color:#6c6760;font-size:14px;margin-top:22px;text-align:center;}}
+  .note a{{color:#6c4cff;}}
+  .foot{{color:#a59e92;font-size:13px;margin-top:40px;text-align:center;}}
+  .foot a{{color:#a59e92;}}
+</style></head><body>
+<div class="bar"><a href="/">Front<span>desk</span></a></div>
+<div class="wrap">
+  <h1>Customer payments</h1>
+  <p class="lead">Already set up with {BRAND}? Start your monthly plan below — it takes a minute and renews automatically each month.</p>
+  <div class="card">
+    <div class="price">£45<span>/month</span></div>
+    <ul>
+      <li>Your custom website &amp; AI assistant, kept live</li>
+      <li>Hosting included</li>
+      <li>Ongoing updates and tweaks</li>
+      <li>Cancel anytime</li>
+    </ul>
+    {_pay_btn}
+    <p class="note">Secure checkout by Stripe. You can pay by card.</p>
+  </div>
+  <p class="note">New here and not set up yet? <a href="/">Start on the home page</a> — we'll have a quick chat and build your site first, then you come back here to pay.</p>
+  <div class="foot">&copy; {BRAND} · Portsmouth · <a href="/">Back to home</a></div>
+</div></body></html>"""
+
+
 @app.route("/")
 def home():
     if "sid" not in session:
@@ -842,6 +891,42 @@ def home():
 @app.route("/privacy")
 def privacy():
     return Response(PRIVACY_PAGE, mimetype="text/html")
+
+
+@app.route("/pay")
+def pay():
+    return Response(PAY_PAGE, mimetype="text/html")
+
+
+# --- TEMPORARY email debug route. Delete once leads are arriving. ---
+# /_debug/email?key=fdtest          -> show config
+# /_debug/email?key=fdtest&send=1   -> fire a real test email
+@app.route("/_debug/email")
+def debug_email():
+    if request.args.get("key") != os.environ.get("DEBUG_KEY", "fdtest"):
+        return Response("not found", status=404)
+    info = {
+        "resend_key_set": bool(RESEND_API_KEY),
+        "resend_key_tail": ("..." + RESEND_API_KEY[-4:]) if RESEND_API_KEY else None,
+        "notify_to": NOTIFY_TO,
+        "mail_from": MAIL_FROM,
+    }
+    if request.args.get("send") == "1":
+        if not RESEND_API_KEY:
+            info["send_result"] = {"skipped": "RESEND_API_KEY not set"}
+        else:
+            try:
+                r = requests.post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+                    json={"from": MAIL_FROM, "to": [NOTIFY_TO],
+                          "subject": "Frontdesk — test email",
+                          "text": "If you can read this, lead emails are working."},
+                    timeout=15)
+                info["send_result"] = {"status": r.status_code, "body": r.text[:600]}
+            except Exception as e:
+                info["send_result"] = {"error": str(e)}
+    return jsonify(info)
 
 
 @app.route("/chat", methods=["POST"])
