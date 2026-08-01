@@ -40,9 +40,9 @@ CONTACT_PHONE = "07493 396628"
 CONTACT_PHONE_TEL = "07493396628"
 CONTACT_EMAIL = "andradudan4@gmail.com"
 
-# Paste your Stripe payment link here (the combined £75 setup + £30/month link).
+# Paste your Stripe payment link here (the combined £200 setup + £30/month link).
 # Until it's set, the "Get started" buttons open the chat instead.
-STRIPE_LINK = "https://buy.stripe.com/6oUbJ19K26f989u6lZbjW03"
+STRIPE_LINK = "https://buy.stripe.com/14A5kD5tM32XdtO9ybbjW07"
 
 # ---------------------------------------------------------------------------
 #  Lead detection + organised lead email
@@ -293,7 +293,7 @@ HOW IT WORKS (3 steps):
 your assistant (usually within a few days). 3. Leads start landing in your inbox.
 
 PRICING (real - you may quote it):
-- £30/month plus a one-off £75 setup fee, everything included: a custom website, the AI assistant trained on
+- £30/month plus a one-off £200 setup fee, everything included: a custom website, the AI assistant trained on
   your services and prices, hosting, and ongoing updates. One simple price.
 - No tiers. Bigger or multi-location needs are quoted custom.
 Prices are intentionally keen because Andra is building up her first clients.
@@ -627,7 +627,7 @@ PAGE = """<!DOCTYPE html>
     </div>
     <div class="r result">
       <div class="big" id="lost">£4,160</div>
-      <p>potentially slipping away every month. The assistant catches those — website, assistant and all — for <b style="color:#fff">£30/month</b> (plus a one-off £75 setup).</p>
+      <p>potentially slipping away every month. The assistant catches those — website, assistant and all — for <b style="color:#fff">£30/month</b> (plus a one-off £200 setup).</p>
       <button class="btn" style="margin-top:18px" onclick="openChat()">Stop the leak →</button>
     </div>
   </div>
@@ -675,7 +675,7 @@ PAGE = """<!DOCTYPE html>
   <div class="head reveal"><div class="eyebrow">Simple pricing</div><h2 class="disp">One plan. Everything included.</h2><p>A one-off setup fee, then one low monthly price that covers the lot — no tiers, no surprises.</p></div>
   <div class="pricing" style="grid-template-columns:1fr;max-width:460px;margin:0 auto;">
     <div class="plan pop reveal"><span class="pop-tag">Everything included</span><div class="tag">Complete</div><div class="price">£30<span>/mo</span></div>
-      <div style="color:#667;margin:-6px 0 4px;font-weight:600;">+ £75 one-off setup</div>
+      <div style="color:#667;margin:-6px 0 4px;font-weight:600;">+ £200 one-off setup</div>
       <ul><li>Your own custom website</li><li>AI assistant trained on your services &amp; prices</li><li>Smart qualifying questions</li><li>Every lead straight to your inbox</li><li>Hosting included</li><li>I keep it updated for you</li></ul>
       <button class="btn" onclick="openChat()">Get started</button></div>
   </div>
@@ -702,7 +702,7 @@ PAGE = """<!DOCTYPE html>
     <details><summary>Will it book appointments into my calendar?</summary><p>It captures the enquiry — name, what they want, preferred timing and contact — and sends it to you to confirm. It won't promise a slot it can't see, which keeps customers happy. Full calendar booking is available as a custom add-on.</p></details>
     <details><summary>How long until it's live?</summary><p>Usually within a few days of our first chat — most businesses are up and running inside a week. Here's how it goes: we have a quick chat about your services, prices and the questions your customers tend to ask; I build and train your assistant on all of it; then I send you a private link to try it yourself and tell me anything you'd like changed. Once you're happy, I add it to your site (or a page I set up for you) and the leads start landing in your inbox. You're kept in the loop the whole way, and the setup is entirely on me — no tech work on your side.</p></details>
     <details><summary>What if I want to cancel?</summary><p>No lock-in — cancel anytime. While you're subscribed your website and assistant stay live and I keep them updated; if you stop, they're simply paused.</p></details>
-    <details><summary>How much does it cost?</summary><p>A one-off £75 setup fee, then £30/month — everything included: your custom website, the AI assistant trained on your business, hosting, and ongoing updates. No tiers. Bigger or multi-location needs are quoted to suit.</p></details>
+    <details><summary>How much does it cost?</summary><p>A one-off £200 setup fee, then £30/month — everything included: your custom website, the AI assistant trained on your business, hosting, and ongoing updates. No tiers. Bigger or multi-location needs are quoted to suit.</p></details>
     <details><summary>What kind of businesses is it for?</summary><p>Local service businesses — hairdressers, barbers, builders, plumbers, electricians, decorators, dog groomers, beauticians, garages, cleaners and more. If customers message you with questions and you can't always reply straight away, it'll pay for itself.</p></details>
     <details><summary>Where do my leads go — is my data safe?</summary><p>Every enquiry lands straight in your email inbox, tidied into a clean summary. Your details and your customers' details are only ever used to follow up on enquiries — never sold or used for advertising.</p></details>
     <details><summary>Do I need to be techy?</summary><p>Not at all. I set the whole thing up for you — there's nothing to install and not a line of code to touch. You just get the leads.</p></details>
@@ -871,7 +871,7 @@ PAY_PAGE = f"""<!DOCTYPE html><html lang="en"><head>
   <p class="lead">Already set up with {BRAND}? Start your plan below — it takes a minute and renews automatically each month.</p>
   <div class="card">
     <div class="price">£30<span>/month</span></div>
-    <div style="color:#6c6760;font-weight:600;margin:-4px 0 2px;">+ £75 one-off setup</div>
+    <div style="color:#6c6760;font-weight:600;margin:-4px 0 2px;">+ £200 one-off setup</div>
     <div style="color:#a59e92;font-size:14px;margin-bottom:6px;">£105 due today, then £30/month</div>
     <ul>
       <li>Your custom website &amp; AI assistant, kept live</li>
@@ -915,10 +915,10 @@ TERMS_PAGE = f"""<!DOCTYPE html><html lang="en"><head>
   <p>A custom website with an AI assistant trained on your business, hosted by us, with the leads it captures sent to your inbox. We include reasonable ongoing updates and tweaks. Larger pieces of work &mdash; such as a full redesign, extra pages or new features beyond the original build &mdash; are quoted and agreed separately.</p>
 
   <h2>2. Price and payment</h2>
-  <p>The service is a one-off setup fee of &pound;75 plus &pound;30 per month. Payments are taken securely through Stripe; your first payment is the setup fee plus your first month, and the &pound;30 monthly fee then recurs automatically until you cancel. Prices may change in future, but we&rsquo;ll always give you notice before any change affects you.</p>
+  <p>The service is a one-off setup fee of &pound;200 plus &pound;30 per month. Payments are taken securely through Stripe; your first payment is the setup fee plus your first month, and the &pound;30 monthly fee then recurs automatically until you cancel. Prices may change in future, but we&rsquo;ll always give you notice before any change affects you.</p>
 
   <h2>3. The setup fee</h2>
-  <p>The &pound;75 setup fee covers the work of building and setting up your site and assistant. Because that work is done upfront, the setup fee is non-refundable once we&rsquo;ve started building.</p>
+  <p>The &pound;200 setup fee covers the work of building and setting up your site and assistant. Because that work is done upfront, the setup fee is non-refundable once we&rsquo;ve started building.</p>
 
   <h2>4. Failed payments</h2>
   <p>If a monthly payment fails, Stripe will retry and let you know. If it stays unpaid, we may pause your website and assistant until payment is back up to date. We&rsquo;ll give you reasonable notice before pausing anything.</p>
