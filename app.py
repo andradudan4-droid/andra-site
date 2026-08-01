@@ -40,9 +40,9 @@ CONTACT_PHONE = "07493 396628"
 CONTACT_PHONE_TEL = "07493396628"
 CONTACT_EMAIL = "andradudan4@gmail.com"
 
-# Paste your Stripe payment link here (the combined £200 setup + £30/month link).
+# Paste your  payment link here (the combined £200 setup + £30/month link).
 # Until it's set, the "Get started" buttons open the chat instead.
-STRIPE_LINK = "https://buy.stripe.com/14A5kD5tM32XdtO9ybbjW07"
+STRIPE_LINK = "https://buy.stripe.com/28E00j9K232X61m7q3bjW08"
 
 # ---------------------------------------------------------------------------
 #  Lead detection + organised lead email
