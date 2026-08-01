@@ -872,7 +872,7 @@ PAY_PAGE = f"""<!DOCTYPE html><html lang="en"><head>
   <div class="card">
     <div class="price">£30<span>/month</span></div>
     <div style="color:#6c6760;font-weight:600;margin:-4px 0 2px;">+ £200 one-off setup</div>
-    <div style="color:#a59e92;font-size:14px;margin-bottom:6px;">£105 due today, then £30/month</div>
+    <div style="color:#a59e92;font-size:14px;margin-bottom:6px;">£230 due today, then £30/month</div>
     <ul>
       <li>Your custom website &amp; AI assistant, kept live</li>
       <li>Hosting included</li>
