@@ -574,6 +574,23 @@ PAGE = """<!DOCTYPE html>
   .big-quote{font-family:var(--disp);font-weight:700;font-size:23px;line-height:1.32;color:#fff;}
   .muted-note{margin-top:16px;font-size:13px;color:rgba(255,255,255,.55);}
   @media(max-width:760px){.casegrid{grid-template-columns:1fr;}.case{padding:28px 24px;}}
+
+  /* cookie consent */
+  .cc-bar{position:fixed;left:16px;right:16px;bottom:16px;z-index:999999;max-width:640px;margin:0 auto;
+    background:rgba(21,19,29,.94);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);
+    border-radius:14px;padding:16px 18px;display:none;align-items:center;gap:16px;flex-wrap:wrap;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);transform:translateY(12px);opacity:0;transition:transform .35s ease,opacity .35s ease;}
+  .cc-bar.cc-show{display:flex;}
+  .cc-bar.cc-in{transform:translateY(0);opacity:1;}
+  .cc-bar p{margin:0;color:#eee;font-size:13.5px;line-height:1.5;flex:1 1 260px;}
+  .cc-bar a{color:var(--accent);text-decoration:underline;}
+  .cc-actions{display:flex;gap:10px;flex:0 0 auto;}
+  .cc-btn{font-family:var(--body);font-size:13px;font-weight:700;padding:9px 16px;border-radius:100px;cursor:pointer;white-space:nowrap;}
+  .cc-accept{background:var(--accent);color:#fff;border:1px solid var(--accent);}
+  .cc-reject{background:transparent;color:#eee;border:1px solid rgba(255,255,255,.3);}
+  .cc-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  @media(max-width:640px){.cc-bar{left:10px;right:10px;bottom:10px;padding:14px;}.cc-actions{width:100%;justify-content:flex-end;}}
+  @media(prefers-reduced-motion:reduce){.cc-bar{transition:none;}}
 </style>
 </head>
 <body>
@@ -728,6 +745,14 @@ PAGE = """<!DOCTYPE html>
   <div id="irow"><input id="inp" placeholder="Type a message…" onkeypress="if(event.key==='Enter')send()"><button id="snd" onclick="send()">➤</button></div>
 </div>
 
+<div class="cc-bar" id="ccBar" role="region" aria-label="Cookie notice">
+  <p>We use a small number of essential cookies to keep this site working (like remembering your chat session). See our <a href="/privacy">Privacy Policy</a> for details.</p>
+  <div class="cc-actions">
+    <button class="cc-btn cc-reject" id="ccReject" type="button">Reject</button>
+    <button class="cc-btn cc-accept" id="ccAccept" type="button">Accept</button>
+  </div>
+</div>
+
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
 
@@ -770,6 +795,31 @@ PAGE = """<!DOCTYPE html>
   async function send(){var i=document.getElementById('inp');var v=i.value.trim();if(!v)return;add(v,'u');i.value='';
     try{var r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:v}),credentials:'same-origin'});
       var d=await r.json();add(d.reply,'b');}catch(e){add("Sorry — something glitched. You can also reach Andra directly at __EMAIL__.",'b');}}
+
+  // cookie consent
+  (function(){
+    var KEY = 'cookieConsent';
+    var bar = document.getElementById('ccBar');
+    if(!bar) return;
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch(e) {}
+    if(stored !== 'accepted' && stored !== 'rejected'){
+      bar.classList.add('cc-show');
+      requestAnimationFrame(function(){ bar.classList.add('cc-in'); });
+    }
+    function hide(){
+      bar.classList.remove('cc-in');
+      setTimeout(function(){ bar.classList.remove('cc-show'); }, 350);
+    }
+    document.getElementById('ccAccept').addEventListener('click', function(){
+      try { localStorage.setItem(KEY, 'accepted'); } catch(e) {}
+      hide();
+    });
+    document.getElementById('ccReject').addEventListener('click', function(){
+      try { localStorage.setItem(KEY, 'rejected'); } catch(e) {}
+      hide();
+    });
+  })();
 </script>
 </body>
 </html>
