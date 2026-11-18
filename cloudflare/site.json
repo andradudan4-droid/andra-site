@@ -1,0 +1,17 @@
+{
+  "base_url": "https://frontdesk.org.uk",
+  "pages": {
+    "/": "index.html",
+    "/privacy": "privacy.html",
+    "/pay": "pay.html",
+    "/terms": "terms.html"
+  },
+  "files": {
+    "/sitemap.xml": "sitemap.xml",
+    "/robots.txt": "robots.txt"
+  },
+  "shim_pages": [
+    "index.html"
+  ],
+  "chat": {}
+}
